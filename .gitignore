@@ -1,0 +1,16 @@
+.idea/
+__pycache__
+*.py[cod]
+*.pot
+*.egg
+*.mo
+*.egg-info/
+.env
+.venv
+.scannerwork
+.coverage
+.mypy_cache
+.pytest_cache
+logs/
+storage/
+temp/
