@@ -33,12 +33,12 @@ class OneObjectOnImage(__Base):
                     break
                 image_file.write(chunk)
 
-            label, probability = predictor.predict(image_file.name)
+            data = predictor.predict(image_file.name)
 
-        data = {
-            "label": label,
-            "probability": probability,
-        }
+        # data = {
+        #     "label": label,
+        #     "probability": round(float(probability), 3),
+        # }
         response.body = json.dumps(data, ensure_ascii=False)
 
 

@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Dict
 
 import cv2
 
@@ -10,8 +10,8 @@ class Predictor:
         self.labels = labels
 
     def predict(
-        self, image_path, width=28, height=28, flatten=False
-    ) -> Tuple[str, float]:
+        self, image_path, width=64, height=64, flatten=False
+    ) -> Dict[str, float]:
         """
         Make prediction for an object on the given image.
 
@@ -19,7 +19,7 @@ class Predictor:
         :param width: target spatial dimension width
         :param height: target spatial dimension height
         :param flatten: whether or not we should flatten the image
-        :return: <label>, <probability value>
+        :return: dictionary of <label>: <probability value>
         """
         image = cv2.imread(image_path)
         image = cv2.resize(image, (width, height))
@@ -33,8 +33,10 @@ class Predictor:
             )
 
         predictions = self.predict_model.predict(image)
-        index: int = predictions.argmax(axis=1)[0]
-        label: str = self.labels.classes_[index]
-        probability: float = predictions[0][index]
 
-        return label, probability
+        return dict(
+            zip(
+                self.labels.classes_,
+                (round(float(pred), 3) for pred in predictions[0])
+            )
+        )
