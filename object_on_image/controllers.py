@@ -4,8 +4,10 @@ import cv2
 
 
 class Predictor:
+    """Predictor class."""
 
     def __init__(self, predict_model, labels) -> None:
+        """Init."""
         self.predict_model = predict_model
         self.labels = labels
 

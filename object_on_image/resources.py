@@ -1,7 +1,7 @@
 import json
 import logging
 import mimetypes
-from typing import IO, Any
+from typing import IO, Any, Dict
 
 from . import __name__ as project_name
 from .controllers import Predictor
@@ -11,8 +11,10 @@ from tempfile import NamedTemporaryFile
 
 
 class __Base:
+    """Base class for a views."""
 
     def __init__(self) -> None:
+        """Init."""
         self.logger = logging.getLogger(
             f"{project_name}.{self.__class__.__name__.lower()}"
         )
@@ -23,7 +25,9 @@ class OneObjectOnImage(__Base):
     _CHUNK_SIZE_BYTES = 4096
 
     def on_post(self, request, response) -> None:
+        """Handle post request."""
         predictor = Predictor(one_obj_model, one_obj_labels)
+        # Read image by chunks and save as temporary file
         ext = mimetypes.guess_extension(request.content_type)
         image_file: IO[Any]
         with NamedTemporaryFile(suffix=ext) as image_file:
@@ -32,13 +36,9 @@ class OneObjectOnImage(__Base):
                 if not chunk:
                     break
                 image_file.write(chunk)
+            # Make prediction
+            data: Dict[str, float] = predictor.predict(image_file.name)
 
-            data = predictor.predict(image_file.name)
-
-        # data = {
-        #     "label": label,
-        #     "probability": round(float(probability), 3),
-        # }
         response.body = json.dumps(data, ensure_ascii=False)
 
 
